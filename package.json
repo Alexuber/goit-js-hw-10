@@ -1,0 +1,37 @@
+{
+  "name": "goit-js-hw-09",
+  "version": "2.0.0",
+  "description": "",
+  "homepage": "https://Alexuber.github.io/goit-js-hw-10",
+  "scripts": {
+    "build": "webpack",
+    "start": "webpack serve --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Alexuber/goit-js-hw-10.git"
+  },
+  "keywords": [],
+  "author": "Alexuber~ <alexuberbuber@gmail.com>",
+  "license": "ISC",
+  "devDependencies": {
+    "css-loader": "^6.7.3",
+    "posthtml-include": "^1.7.4",
+    "sass": "^1.57.1",
+    "sass-loader": "^13.2.0",
+    "style-loader": "^3.3.1",
+    "webpack": "^5.75.0",
+    "webpack-cli": "^5.0.1",
+    "webpack-dev-server": "^4.11.1"
+  },
+  "dependencies": {
+    "file-loader": "^6.2.0",
+    "flatpickr": "^4.6.13",
+    "html-webpack-plugin": "^5.5.0",
+    "lodash": "^4.17.21",
+    "modern-normalize": "^1.1.0",
+    "notiflix": "^3.2.6",
+    "url-loader": "^4.1.1"
+  },
+  "browserslist": "> 0.5%, last 2 versions, not dead"
+}
