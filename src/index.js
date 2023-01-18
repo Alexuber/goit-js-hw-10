@@ -20,10 +20,7 @@ function fetchCountries(name) {
         return response.json();
       }
     })
-    .then(data => {
-      console.log('data -->', data);
-      renderMarkup(data);
-    });
+    .then(renderMarkup);
 }
 
 function renderMarkup(array) {
@@ -86,10 +83,9 @@ searchInputEl.addEventListener(
 );
 
 function handleKeyPressInput(e) {
-  e.preventDefault();
   console.log(' -->', e);
 
-  if (e.code === 'BackSpace') {
+  if (e.key === 'Backspace') {
     searchInputEl.removeEventListener(
       'input',
       debounce(handleSearchInput, DEBOUNCE_DELAY)
@@ -97,4 +93,4 @@ function handleKeyPressInput(e) {
   }
 }
 
-searchInputEl.addEventListener('keypress', debounce(handleKeyPressInput));
+searchInputEl.addEventListener('keydown', handleKeyPressInput);
