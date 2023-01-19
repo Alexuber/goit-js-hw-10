@@ -1,27 +1,42 @@
 import './styles/main.scss';
+import { fetchCountries } from './js/fetchCountries';
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
+
 const debounce = require('lodash.debounce');
 
 const DEBOUNCE_DELAY = 300;
-const NAME_URL = 'https://restcountries.com/v3.1/name/';
 
 const searchInputEl = document.querySelector('#search-box');
 const countryListEl = document.querySelector('.country-list');
-const countryInfoEl = document.querySelector('.country-info');
 
-const filter = 'name,capital,population,flags,languages';
+function handleSearchInput(e) {
+  let countryName = e.target.value.trim();
 
-function fetchCountries(name) {
-  return fetch(`${NAME_URL}${name}?fields=${filter}`)
-    .then(response => {
-      if (!response.ok) {
-        console.log('response -->', response);
-        throw new Error(response.statusText);
-      } else {
-        return response.json();
-      }
-    })
-    .then(renderMarkup);
+  if (countryName !== '') {
+    fetchCountries(countryName)
+      .then(data => {
+        if (data.length > 10) {
+          countryListEl.innerHTML = '';
+          Notify.info(
+            'Too many matches found. Please enter a more specific name.'
+          );
+        } else {
+          renderMarkup(data);
+        }
+      })
+      .catch(() => {
+        countryListEl.innerHTML = '';
+        Notify.failure('Oops, there is no country with that name');
+      });
+  } else {
+    return (countryListEl.innerHTML = '');
+  }
 }
+
+searchInputEl.addEventListener(
+  'input',
+  debounce(handleSearchInput, DEBOUNCE_DELAY)
+);
 
 function renderMarkup(array) {
   if (array.length === 1) {
@@ -44,53 +59,32 @@ function createOneCountryMarkup(array) {
         const allLanguages = Object.values(languages);
 
         const markup = `<li class="country-list__item">
-        <img class="country-list__flag" src="${png}" width="60"></img>
+        <div class="country-list__title">
+        <img class="country-list__flag" src="${png}" width="70px" height="54px"></img>
       <p class="country-list__name">${official}</p>
-      <p class="country-list__name">Capital: ${capital}</p>
-      <p class="country-list__population">Population: ${population}</p>
-      <p class="country-list__languages">Languages: ${allLanguages}</p>
+      </div>
+      <p class="country-list__name">Capital: <span class="name__span">${capital}</span></p>
+      <p class="country-list__population">Population: <span class="population__span">${population}</span></p>
+      <p class="country-list__languages">Languages: <span class="lang__span">${allLanguages}</span></p>
     </li>`;
         return markup;
       }
     )
     .join('');
-  countryListEl.insertAdjacentHTML('beforeend', markup);
+
+  countryListEl.innerHTML = markup;
 }
 
 function createMultiplyCountryMarkup(array) {
   const markup = array
     .map(({ name: { official }, flags: { png } }) => {
-      const markup = `<li class="country-list__item">
-        <img class="country-list__flag" src="${png}" width="60"></img>
+      const markup = `<li class="country-list__item country-list__item--multiple">
+        <img class="country-list__flag" src="${png}" width="60px" height="30px" alt="Flag of ${official}"></img>
       <p class="country-list__name">${official}</p>
     </li>`;
       return markup;
     })
     .join('');
-  countryListEl.insertAdjacentHTML('beforeend', markup);
+
+  countryListEl.innerHTML = markup;
 }
-
-function handleSearchInput(e) {
-  console.log('e.target.value -->', e.target.value);
-  if (e.target.value !== '') {
-    fetchCountries(e.target.value);
-  }
-}
-
-searchInputEl.addEventListener(
-  'input',
-  debounce(handleSearchInput, DEBOUNCE_DELAY)
-);
-
-function handleKeyPressInput(e) {
-  console.log(' -->', e);
-
-  if (e.key === 'Backspace') {
-    searchInputEl.removeEventListener(
-      'input',
-      debounce(handleSearchInput, DEBOUNCE_DELAY)
-    );
-  }
-}
-
-searchInputEl.addEventListener('keydown', handleKeyPressInput);
